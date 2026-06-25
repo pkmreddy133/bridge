@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Bridge — Hindi ⇄ English for Jay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#15172B; --panel:#1F2240; --panel2:#282C50; --paper:#F3EFE6;
+    --muted:#9AA0C8; --marigold:#F4A92F; --teal:#5ED3A8; --rose:#FF7A8A;
+    --line:#34386A; --indigo:#7C83FF;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+    padding:18px 14px 60px;display:flex;justify-content:center}
+  .wrap{width:100%;max-width:480px}
+  .deva{font-family:'Noto Serif Devanagari','Plus Jakarta Sans',serif}
+  h1{font-size:24px;font-weight:800;margin:0;letter-spacing:-.5px}
+  .head{display:flex;align-items:baseline;gap:10px;margin-bottom:16px}
+  .sub{color:var(--teal);font-size:19px}
+  .muted{color:var(--muted)}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--panel);padding:5px;border-radius:14px;border:1px solid var(--line)}
+  .tab{flex:1;border:none;border-radius:10px;padding:11px;background:transparent;color:var(--muted);
+    font-family:inherit;font-weight:700;font-size:14px;cursor:pointer}
+  .tab.on{background:var(--panel2);color:var(--paper)}
+  .hint{color:var(--muted);font-size:13px;margin:0 0 8px;line-height:1.5}
+  .hint.small{font-size:12px;opacity:.8;margin-bottom:14px}
+  .feed{max-height:44vh;overflow-y:auto;margin-bottom:14px;display:flex;flex-direction:column;gap:10px}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:28px 12px;background:var(--panel);
+    border-radius:14px;border:1px dashed var(--line)}
+  .bubble{max-width:88%;border-radius:16px;padding:12px 14px}
+  .bubble.you{align-self:flex-end;background:var(--panel2);border:1px solid #7C83FF66}
+  .bubble.helper{align-self:flex-start;background:var(--panel);border:1px solid var(--line)}
+  .bsrc{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px}
+  .bmain{font-weight:700;line-height:1.35;font-size:19px}
+  .bmain.hi{font-size:22px}
+  .replay{margin-top:8px;background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;font-family:inherit}
+  .mics{display:flex;gap:10px;margin-bottom:14px}
+  .mic{flex:1;position:relative;border:none;border-radius:16px;padding:16px 8px;background:var(--panel2);
+    color:var(--paper);box-shadow:0 0 0 1px var(--line);cursor:pointer;transition:all .2s;font-family:inherit}
+  .mic.you.active{background:var(--indigo);color:var(--ink);box-shadow:0 0 0 4px #7C83FF33}
+  .mic.helper.active{background:var(--marigold);color:var(--ink);box-shadow:0 0 0 4px #F4A92F33}
+  .mic .lbl{font-weight:800;font-size:15px;margin-top:6px}
+  .mic .slbl{font-size:13px;opacity:.85}
+  .row{display:flex;gap:8px;align-items:stretch}
+  select,input{font-family:inherit}
+  select{background:var(--panel2);color:var(--paper);border:1px solid var(--line);border-radius:10px;padding:0 8px;font-size:12px}
+  input{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;
+    color:var(--paper);font-size:15px;outline:none;min-width:0}
+  .go{background:var(--teal);color:var(--ink);border:none;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer;font-family:inherit}
+  .go:disabled{background:var(--panel);color:var(--muted);cursor:default}
+  .err{background:#FF7A8A1A;border:1px solid #FF7A8A55;color:var(--rose);border-radius:12px;padding:11px 13px;font-size:14px;margin-bottom:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+  .cen{font-size:21px;font-weight:800;letter-spacing:-.3px}
+  .cdeva{font-size:19px;color:var(--indigo);font-weight:700;margin-top:8px}
+  .csay{color:var(--muted);font-size:12px}
+  .cmeanrow{display:flex;align-items:baseline;gap:8px;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+  .cmean{font-size:17px;color:var(--teal);font-weight:700}
+  .croman{color:var(--muted);font-size:13px;font-style:italic}
+  .cbtns{display:flex;gap:8px;margin-top:14px}
+  .say{background:var(--marigold);color:var(--ink);border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit}
+  .hi{background:var(--panel2);color:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer;font-family:inherit}
+  .x{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:0;margin-left:auto}
+  .ctop{display:flex;justify-content:space-between;align-items:flex-start}
+  .reset{margin-top:10px;background:none;border:1px solid var(--line);color:var(--muted);border-radius:10px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+  .foot{color:var(--muted);font-size:11px;text-align:center;margin-top:22px;line-height:1.5}
+  .hide{display:none}
+  svg{display:block;margin:0 auto}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>Bridge</h1><span class="sub deva">हिंदी ⇄ English</span></div>
+
+  <div class="tabs">
+    <button class="tab on" id="tabTalk">Talk</button>
+    <button class="tab" id="tabCare">Jay's commands</button>
+  </div>
+
+  <!-- TALK -->
+  <section id="talk">
+    <p class="hint">On iPhone: tap the box, hit your keyboard's 🎤, speak. Switch keyboard (🌐) for Hindi. Each turn is read aloud in the other language. The mic buttons work in Chrome / Android.</p>
+    <div class="feed" id="feed">
+      <div class="empty" id="emptyMsg">No conversation yet. Tap a mic, or type below.</div>
+    </div>
+    <div class="err hide" id="talkErr"></div>
+    <div class="mics">
+      <button class="mic you" id="micEn">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        <div class="lbl">You</div><div class="slbl">English</div>
+      </button>
+      <button class="mic helper" id="micHi">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        <div class="lbl">Helper</div><div class="slbl deva">हिंदी</div>
+      </button>
+    </div>
+    <div class="row">
+      <select id="dir"><option value="en2hi">EN→HI</option><option value="hi2en">HI→EN</option></select>
+      <input id="typed" placeholder="Tap here, then keyboard 🎤" />
+      <button class="go" id="goBtn" disabled>Go</button>
+    </div>
+  </section>
+
+  <!-- CARE -->
+  <section id="care" class="hide">
+    <p class="hint">Commands Jay understands — in English. Each card shows how to <b style="color:var(--paper)">say</b> it and what it <b style="color:var(--paper)">means</b>. Hand the helper the phone: he reads the Devanagari to pronounce the English, taps <b style="color:var(--marigold)">▶ Say to Jay</b> to hear it, and the Hindi line tells him what he's saying.</p>
+    <div class="row" style="margin-bottom:14px">
+      <input id="addInput" placeholder="Add a command (English)" />
+      <button class="go" id="addBtn" disabled>Add</button>
+    </div>
+    <div class="err hide" id="careErr"></div>
+    <div id="cards"></div>
+    <button class="reset" id="resetBtn">Reset to starter list</button>
+  </section>
+
+  <p class="foot">Runs entirely in your browser. Voice input needs Chrome (Android) or Safari opened directly — or just use the keyboard 🎤. Translations by MyMemory.</p>
+</div>
+
+<script>
+const SEED = [
+  {id:"s1", en:"Sit down", deva:"सिट डाउन", mean:"बैठ जाओ", roman:"baith jao"},
+  {id:"s2", en:"Come here", deva:"कम हियर", mean:"यहाँ आओ", roman:"yahaan aao"},
+  {id:"s3", en:"Time to eat", deva:"टाइम टू ईट", mean:"खाने का समय", roman:"khaane ka samay"},
+  {id:"s4", en:"Drink water", deva:"ड्रिंक वॉटर", mean:"पानी पियो", roman:"paani piyo"},
+  {id:"s5", en:"Wash your hands", deva:"वॉश योर हैंड्स", mean:"हाथ धो लो", roman:"haath dho lo"},
+  {id:"s6", en:"Shoes on", deva:"शूज़ ऑन", mean:"जूते पहनो", roman:"joote pehno"},
+  {id:"s7", en:"Let's go for a drive", deva:"लेट्स गो फ़ॉर अ ड्राइव", mean:"गाड़ी में घूमने चलें", roman:"gaadi mein ghoomne chalein"},
+  {id:"s8", en:"It's okay, calm down", deva:"इट्स ओके, काम डाउन", mean:"कोई बात नहीं, शांत हो जाओ", roman:"koi baat nahi, shaant ho jao"},
+  {id:"s9", en:"Good job", deva:"गुड जॉब", mean:"शाबाश", roman:"shaabaash"},
+  {id:"s10", en:"Time for bed", deva:"टाइम फ़ॉर बेड", mean:"सोने का समय", roman:"sone ka samay"},
+];
+const KEY="bridge-cmds-v1";
+const $=s=>document.querySelector(s);
+
+/* ---- speech synthesis ---- */
+let voices=[], primed=false;
+function loadVoices(){ voices=window.speechSynthesis?window.speechSynthesis.getVoices():[]; }
+if(window.speechSynthesis){ loadVoices(); window.speechSynthesis.onvoiceschanged=loadVoices; }
+function prime(){ // unlock iOS speech on first tap
+  if(primed||!window.speechSynthesis) return;
+  const u=new SpeechSynthesisUtterance(""); window.speechSynthesis.speak(u); primed=true;
+}
+function speak(text,lang){
+  if(!window.speechSynthesis||!text) return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang=lang;
+  const v=voices.find(x=>(x.lang||"").toLowerCase().startsWith(lang.slice(0,2)));
+  if(v) u.voice=v; u.rate=lang.startsWith("en")?0.85:0.95;
+  window.speechSynthesis.speak(u);
+}
+
+/* ---- translation (MyMemory) ---- */
+async function translate(text, from, to){
+  const url="https://api.mymemory.translated.net/get?q="+encodeURIComponent(text.slice(0,480))+"&langpair="+from+"|"+to;
+  const res=await fetch(url);
+  if(!res.ok) throw new Error("net");
+  const data=await res.json();
+  const t=data && data.responseData && data.responseData.translatedText;
+  if(!t) throw new Error("empty");
+  if(/MYMEMORY WARNING|QUERY LENGTH LIMIT/i.test(t)) throw new Error("limit");
+  return t;
+}
+
+/* ---- speech recognition ---- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let recog=null, listening=null;
+if(SR){ recog=new SR(); recog.interimResults=false; recog.continuous=false; }
+
+function setMic(which){
+  $("#micEn").classList.toggle("active", which==="en");
+  $("#micHi").classList.toggle("active", which==="hi");
+  $("#micEn").querySelector(".slbl").textContent = which==="en"?"listening…":"English";
+  $("#micHi").querySelector(".slbl").textContent = which==="hi"?"listening…":"हिंदी";
+}
+function startMic(which){
+  prime(); talkErr("");
+  if(!recog){ talkErr("Voice buttons need Chrome or Safari. Use the keyboard 🎤 in the box instead."); return; }
+  if(listening){ recog.stop(); return; }
+  recog.lang = which==="en" ? "en-US" : "hi-IN";
+  recog.onresult = e=>{
+    const t=e.results[0][0].transcript;
+    run(t, which==="en"?"en2hi":"hi2en");
+  };
+  recog.onerror = e=>{ listening=null; setMic(null);
+    if(e.error==="not-allowed"||e.error==="service-not-allowed") talkErr("Mic blocked. Allow microphone for this site, or use the keyboard 🎤.");
+    else if(e.error!=="aborted"&&e.error!=="no-speech") talkErr("Didn't catch that — try again, or type it.");
+  };
+  recog.onend = ()=>{ listening=null; setMic(null); };
+  try{ recog.start(); listening=which; setMic(which); }catch(_){}
+}
+
+/* ---- Talk flow ---- */
+const feed=$("#feed"), emptyMsg=$("#emptyMsg");
+function talkErr(m){ const e=$("#talkErr"); if(!m){e.classList.add("hide");return;} e.textContent=m; e.classList.remove("hide"); }
+async function run(src, dir){
+  src=(src||"").trim(); if(!src) return;
+  talkErr(""); prime();
+  const from=dir==="en2hi"?"en":"hi", to=dir==="en2hi"?"hi":"en";
+  try{
+    const out=await translate(src, from, to);
+    addBubble(dir==="en2hi"?"you":"helper", src, out, to);
+    speak(out, dir==="en2hi"?"hi-IN":"en-US");
+  }catch(err){
+    talkErr(err.message==="limit" ? "Daily free translation limit hit — try again tomorrow." : "Translation hiccup — check your connection and try again.");
+  }
+}
+function addBubble(who, src, main, to){
+  emptyMsg && emptyMsg.remove();
+  const b=document.createElement("div");
+  b.className="bubble "+who;
+  const label=who==="you"?"You said":"Helper said";
+  b.innerHTML='<div class="bsrc"></div><div class="bmain '+(to==="hi"?"hi deva":"")+'"></div>';
+  b.querySelector(".bsrc").textContent=label+": "+src;
+  b.querySelector(".bmain").textContent=main;
+  const rep=document.createElement("button"); rep.className="replay"; rep.textContent="↺ replay";
+  rep.onclick=()=>speak(main, to==="hi"?"hi-IN":"en-US");
+  b.appendChild(rep);
+  feed.appendChild(b); feed.scrollTop=feed.scrollHeight;
+}
+
+/* ---- Care flow ---- */
+let cmds=[];
+function loadCmds(){
+  try{ const r=localStorage.getItem(KEY); cmds = r?JSON.parse(r):SEED.slice(); }
+  catch(_){ cmds=SEED.slice(); }
+}
+function saveCmds(){ try{ localStorage.setItem(KEY, JSON.stringify(cmds)); }catch(_){} }
+function careErr(m){ const e=$("#careErr"); if(!m){e.classList.add("hide");return;} e.textContent=m; e.classList.remove("hide"); }
+function renderCards(){
+  const wrap=$("#cards"); wrap.innerHTML="";
+  cmds.forEach(c=>{
+    const card=document.createElement("div"); card.className="card";
+    const removable=c.id.startsWith("u");
+    card.innerHTML =
+      '<div class="ctop"><div class="cen"></div>'+(removable?'<button class="x">×</button>':'')+'</div>'+
+      (c.deva?'<div class="cdeva deva"><span class="dv"></span> <span class="csay">← say it like this</span></div>':'')+
+      '<div class="cmeanrow"><span class="cmean deva"></span><span class="croman"></span></div>'+
+      '<div class="cbtns"><button class="say">▶ Say to Jay</button><button class="hi deva">हिंदी</button></div>';
+    card.querySelector(".cen").textContent=c.en;
+    if(c.deva) card.querySelector(".dv").textContent=c.deva;
+    card.querySelector(".cmean").textContent=c.mean||"";
+    card.querySelector(".croman").textContent=c.roman||"";
+    card.querySelector(".say").onclick=()=>{prime();speak(c.en,"en-US");};
+    card.querySelector(".hi").onclick=()=>{prime();speak(c.mean||c.en,"hi-IN");};
+    if(removable) card.querySelector(".x").onclick=()=>{ cmds=cmds.filter(x=>x.id!==c.id); saveCmds(); renderCards(); };
+    wrap.appendChild(card);
+  });
+}
+async function addCmd(){
+  const en=$("#addInput").value.trim(); if(!en) return;
+  careErr(""); prime();
+  const btn=$("#addBtn"); btn.textContent="…"; btn.disabled=true;
+  try{
+    const mean=await translate(en,"en","hi");
+    cmds.unshift({id:"u"+Date.now(), en, deva:"", mean, roman:""});
+    saveCmds(); renderCards(); $("#addInput").value=""; toggleAdd();
+  }catch(err){
+    careErr(err.message==="limit"?"Daily free translation limit hit — add it tomorrow.":"Couldn't fetch the Hindi — check your connection and try again.");
+  }finally{ btn.textContent="Add"; toggleAdd(); }
+}
+
+/* ---- wiring ---- */
+$("#micEn").onclick=()=>startMic("en");
+$("#micHi").onclick=()=>startMic("hi");
+$("#goBtn").onclick=()=>{ run($("#typed").value, $("#dir").value); $("#typed").value=""; $("#goBtn").disabled=true; };
+$("#typed").addEventListener("input",e=>{ $("#goBtn").disabled=!e.target.value.trim(); });
+$("#typed").addEventListener("keydown",e=>{ if(e.key==="Enter"){ $("#goBtn").click(); } });
+$("#addInput").addEventListener("input",toggleAdd);
+$("#addInput").addEventListener("keydown",e=>{ if(e.key==="Enter") addCmd(); });
+$("#addBtn").onclick=addCmd;
+$("#resetBtn").onclick=()=>{ cmds=SEED.slice(); saveCmds(); renderCards(); };
+function toggleAdd(){ $("#addBtn").disabled=!$("#addInput").value.trim(); }
+
+$("#tabTalk").onclick=()=>{ $("#tabTalk").classList.add("on"); $("#tabCare").classList.remove("on"); $("#talk").classList.remove("hide"); $("#care").classList.add("hide"); };
+$("#tabCare").onclick=()=>{ $("#tabCare").classList.add("on"); $("#tabTalk").classList.remove("on"); $("#care").classList.remove("hide"); $("#talk").classList.add("hide"); };
+
+loadCmds(); renderCards();
+</script>
+</body>
+</html>
